@@ -1,50 +1,78 @@
 import axios from "axios";
 import { useUserStore } from "../store/useUserStore";
 
-const apiClient = axios.create({
-  baseURL: "https://api.kitek-pg.ru/api/marketplace/api",
-  headers: {
-    "Content-Type": "application/json",
-    Accept: "application/json",
-  },
-});
-
-apiClient.interceptors.request.use((config) => {
-  const { session } = useUserStore.getState();
-
-  if (session?.token) {
-    config.headers.Authorization = `Bearer ${session.token}`;
-  }
-
-  return config;
-});
-
-export const api = {
-  // Регистрация
-  register: async (username, email, password) => {
-    const response = await apiClient.post("/auth/register", {
-      username,
-      email,
-      password,
-    });
-    return response.data;
-  },
-
-  login: async (username, password) => {
-    const response = await apiClient.post("/auth/login", {
-      username,
-      password,
-    });
-    return response.data;
-  },
-
-  getMe: async () => {
-    try {
-      const response = await apiClient.get("/auth/me");
-      return response.data;
-    } catch (error) {
-      console.error("Ошибка при получении данных пользователя:", error)
-      return null; 
+const apiInstance = axios.create({
+    baseURL: "https://api.kitek-pg.ru/api/marketplace",
+    headers: {
+        "Content-Type": "application/json",
+        "Accept": "application/json",
+    },
+})
+apiInstance.interceptors.request.use((config) => {
+    const { session } = useUserStore.getState()
+    if (session?.token) {
+        config.headers.Authorization = `Bearer ${session.token}`
     }
-  },
-};
+    return config
+})
+
+const registerUser = async (user) =>{
+    const res = await apiInstance.post("/auth/register", user)
+    return res
+}
+const loginUser = async (user) =>{
+    const res = await apiInstance.post("/auth/login", user)
+    return res
+}
+
+const getItems= async () =>{
+    const res = await apiInstance.get("/items")
+    return res.data
+}
+
+const sendItems= async(item) => {
+ const res = await apiInstance.post("/items", item)
+ return res
+}
+const getItemDetails = async (id) => {
+const res = await apiInstance.get(`/items/${id}`)
+return res
+
+}
+
+const createBid = async ({id, amount}) => {
+    const res = await apiInstance.post(`/items/${id}/bids`, {amount})
+    return res.data
+}
+
+const getMyBids = async () => {
+    const res = await apiInstance.get("/bids/my")
+    return res
+}
+
+const getItemBids = async (id) => {
+    const res = await apiInstance.get(`/items/${id}/bids`)
+    return res
+}
+const getStats = async () => {
+    const res = await apiInstance.get("/stats")
+    return res
+}
+
+
+const deleteItems = async ({id}) => {
+    const res = await apiInstance.delete(`/items/${id}`)
+    return res.data
+}
+
+ export const api = { 
+    registerUser, 
+    loginUser, 
+    getItems, 
+    sendItems, 
+    getItemDetails, 
+    getMyBids, 
+    getItemBids, 
+    createBid,
+    getStats,
+    deleteItems}

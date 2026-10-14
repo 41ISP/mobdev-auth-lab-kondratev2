@@ -1,7 +1,24 @@
+import { useEffect, useState } from 'react'
 import ItemCard from '../components/ItemCard'
+import { useItemStore } from '../store/useItemStore'
+import { api } from '../api/api'
 
 const ItemsList = () => {
-    const items = []
+    const items = useItemStore((state) => state.items)
+    const getItems = useItemStore((state) => state.getItems)
+    const [stats, setStats] = useState(null)
+
+    useEffect(() => {
+        const loadData = async () => {
+            try {
+                await getItems()
+                const statsData = await api.getStats()
+                setStats(statsData)
+            } catch (error) {
+                console.error("Ошибка загрузки", error)
+        } };
+        loadData()
+    }, [getItems])
 
     return (
         <div className="container">
@@ -14,15 +31,15 @@ const ItemsList = () => {
                     <span class="stat-label">Товаров</span>
                 </div>
                 <div class="stat-item">
-                    <span class="stat-value">0</span>
+                    <span class="stat-value"></span>
                     <span class="stat-label">Ставок</span>
                 </div>
                 <div class="stat-item">
-                    <span class="stat-value">0</span>
+                    <span class="stat-value"></span>
                     <span class="stat-label">Активных</span>
                 </div>
                 <div class="stat-item">
-                    <span class="stat-value">0₽</span>
+                    <span class="stat-value">₽</span>
                     <span class="stat-label">Средняя цена</span>
                 </div>
             </div>

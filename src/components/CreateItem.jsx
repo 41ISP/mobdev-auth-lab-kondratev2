@@ -1,7 +1,13 @@
-import { Link } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
 import Input from './Input'
+import { useItemStore } from '../store/useItemStore'
+import { useState } from 'react'
 
 const CreateItem = () => {
+    const getItems = useItemStore((state) => state.getItems)
+    const navigate = useNavigate()
+    const [error, setError] = useState('')
+
     const handleSubmit = () => {}
     return (
         <div className="container">
@@ -85,7 +91,7 @@ const CreateItem = () => {
                     </div>
 
                     <div class="form-actions">
-                        <Link href="/" class="btn-cancel">
+                        <Link to="/" class="btn-cancel">
                             Отмена
                         </Link>
                         <button type="submit" class="btn-submit">
